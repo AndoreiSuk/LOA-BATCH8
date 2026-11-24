@@ -226,6 +226,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // 7b. Field Validation (Email + Philippine mobile number)
+  const emailInput = document.getElementById('email-input');
+  const phoneInput = document.getElementById('phone-input');
+  const emailError = document.getElementById('email-error');
+  const phoneError = document.getElementById('phone-error');
+
+  function checkEmail() {
+    const v = emailInput.value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@.]{2,}$/.test(v);
+    const msg = ok ? '' : 'Enter a complete email, like name@example.com';
+    emailInput.setCustomValidity(msg);
+    return msg;
+  }
+
+  function checkPhone() {
+    const v = phoneInput.value;
+    let msg = '';
+    if (v.length !== 11) msg = `Enter all 11 digits (you typed ${v.length}). Example: 09123456789`;
+    else if (!v.startsWith('09')) msg = 'Mobile numbers start with 09';
+    phoneInput.setCustomValidity(msg);
+    return msg;
+  }
+
+  function showError(input, box, msg) {
+    box.textContent = msg;
+    input.classList.toggle('has-error', Boolean(msg));
+  }
+
+  // Phone: digits only, hard stop at 11 (also handles paste)
+  phoneInput.addEventListener('input', () => {
+    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 11);
+    checkPhone();
+    if (phoneInput.classList.contains('has-error')) showError(phoneInput, phoneError, checkPhone());
+  });
+
+  emailInput.addEventListener('input', () => {
+    checkEmail();
+    if (emailInput.classList.contains('has-error')) showError(emailInput, emailError, checkEmail());
+  });
+
+  // Show our message instead of the browser's default bubble
+  emailInput.addEventListener('invalid', (e) => {
+    e.preventDefault();
+    showError(emailInput, emailError, checkEmail() || 'Enter a valid email');
+  });
+  phoneInput.addEventListener('invalid', (e) => {
+    e.preventDefault();
+    showError(phoneInput, phoneError, checkPhone() || 'Enter a valid phone number');
+  });
+
+  // Show errors when leaving a field
+  emailInput.addEventListener('blur', () => {
+    if (emailInput.value) showError(emailInput, emailError, checkEmail());
+  });
+  phoneInput.addEventListener('blur', () => {
+    if (phoneInput.value) showError(phoneInput, phoneError, checkPhone());
+  });
+
   // 8. Form Submission (Supabase Live Insert + Track Upload + Instant Broadcast)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -307,6 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset form and custom UI
     form.reset();
+    showError(emailInput, emailError, '');
+    showError(phoneInput, phoneError, '');
     styleValue.value = '';
     styleSearch.value = '';
     expValue.value = '';

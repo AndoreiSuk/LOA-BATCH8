@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LOA | Batch 8 Auditions</title>
+    <title>LOA Batch 8 Auditions</title>
     <meta name="description"
         content="A private call for exceptional movement artists ready to earn their place among the Aces." />
     <meta property="og:title" content="LOA | League of Aces — Batch 8 Auditions" />
@@ -115,10 +115,17 @@
                     <div class="field-grid">
                         <label>Full name <span>*</span><input name="name" autocomplete="name" required
                                 placeholder="Your full name" /></label>
-                        <label>Email address <span>*</span><input type="email" name="email" autocomplete="email"
-                                required placeholder="you@example.com" /></label>
-                        <label>Phone number <span>*</span><input type="tel" name="phone" autocomplete="tel" required
-                                placeholder="+63 900 000 0000" /></label>
+                        <label>Email address <span>*</span>
+                            <input type="email" name="email" id="email-input" autocomplete="email" required
+                                placeholder="you@example.com" />
+                            <small class="field-error" id="email-error" aria-live="polite"></small>
+                        </label>
+
+                        <label>Phone number <span>*</span>
+                            <input type="tel" name="phone" id="phone-input" autocomplete="tel" inputmode="numeric"
+                                maxlength="11" required placeholder="09XX XXX XXXX" />
+                            <small class="field-error" id="phone-error" aria-live="polite"></small>
+                        </label>
                         <label>Current city <span>*</span><input name="city" autocomplete="address-level2" required
                                 placeholder="City, Barangay" /></label>
                     </div>
@@ -134,8 +141,7 @@
                     <div class="style-picker" id="style-picker">
                         <label for="style-search">Primary dance style <span>*</span></label>
                         <div class="style-input-wrap">
-                            <input type="text" id="style-search"
-                                placeholder="Select or type your primary style (e.g., Hip-hop, Afro, Contemporary)..."
+                            <input type="text" id="style-search" placeholder="Select or type your style..."
                                 autocomplete="off" required />
                             <input type="hidden" name="discipline" id="style-value" required />
                             <span class="picker-chevron" aria-hidden="true">▾</span>
@@ -186,12 +192,12 @@
                                 <input type="file" id="music-file-input"
                                     accept="audio/*,video/mp4,video/quicktime,.mp3,.wav,.m4a,.mp4,.mov"
                                     class="sr-only" />
-                                <span id="music-file-label">Upload Track File (Max 35MB)</span>
+                                <span id="music-file-label">Upload Track File</span>
                                 <small>MP3 / M4A / WAV / MP4</small>
                             </label>
                         </div>
                         <small id="music-helper-note">Upload your cut track (audio or CapCut MP4/MOV export) for sound
-                            booth playback.</small>
+                            booth playback. (Max 35 MB)</small>
                     </div>
                     <label class="full-field">
                         What motivates you to join League of Aces? <span>*</span>

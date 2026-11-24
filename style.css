@@ -1282,11 +1282,56 @@ body.admin-page {
 @media (max-width: 768px) {
   .orb-a { width: 320px; height: 320px; left: -140px; }
   .orb-b { width: 220px; height: 220px; right: -90px; }
-  .orb-c, .dot-b { display: none; }s
+  .orb-c, .dot-b { display: none; }
   .admin-ghost { font-size: 52vw; }
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .orb, .dot { animation: none; }
+}
+
+@media (max-width: 640px) {
+  /* Smaller, softer hint text; typed text stays 16px */
+  .audition-form ::placeholder {
+    font-size: 14px;
+    color: #9a9285;
+    opacity: 1;
+  }
+
+  /* The "Select a range" dropdown isn't a real input, so it needs its own rule */
+  .trigger-text.is-placeholder {
+    font-size: 14px;
+    color: #9a9285;
+  }
+
+  /* Upload button: let the label wrap and put the file types on their own line */
+  .music-upload-btn {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 14px 16px;
+  }
+  .music-upload-btn span {
+    flex: 1 1 100%;
+    white-space: normal;
+    font-size: 14px;
+  }
+  .music-upload-btn small {
+    font-size: 9px;
+  }
+}
+
+.field-error {
+  display: block;
+  min-height: 0;
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #b3402f;
+}
+.field-error:empty { display: none; }
+.audition-form input.has-error {
+  border-color: #b3402f;
+  background: #fbf1ee;
 }
