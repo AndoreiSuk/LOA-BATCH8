@@ -1458,3 +1458,15 @@ body.admin-page {
   border-color: #c5a059;
 }
 .style-option.style-custom small { color: #a17c3e; font-weight: 600; }
+
+.pay-select {
+  display: block;
+  margin-top: 8px;
+  min-width: 110px;
+  padding: 6px 28px 6px 10px;
+  font-size: 11px;
+}
+.pay-select.is-paid {
+  border-color: #7da36b;
+  color: #b9d8a8;
+}

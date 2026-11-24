@@ -237,12 +237,15 @@
                     : `<button type="button" class="btn-play-track" data-play-id="${row.id}">
                          <span>▶</span><span>Play Track</span>
                        </button>`;
-                const paymentCellHtml = !row.payment_method
-                    ? `<span style="color:#6e685f;">—</span>`
-                    : `<span class="pill-style">${escapeHtml(row.payment_method)}</span>${row.gcash_ref
-                        ? `<div class="applicant-sub">Ref ${escapeHtml(row.gcash_ref)}</div>`
-                        : ''
-                    }`;
+                const isPaid = row.payment_status === 'Paid';
+                const paymentCellHtml = `
+                    ${row.payment_method
+                        ? `<span class="pill-style">${escapeHtml(row.payment_method)}</span>${row.gcash_ref ? `<div class="applicant-sub">Ref ${escapeHtml(row.gcash_ref)}</div>` : ''
+                        }`
+                        : `<span style="color:#6e685f;">—</span>`}
+                    <select class="status-select pay-select ${isPaid ? 'is-paid' : ''}" data-pay-id="${row.id}">
+                        ${['Not Paid', 'Paid'].map(p => `<option value="${p}" ${(row.payment_status || 'Not Paid') === p ? 'selected' : ''}>${p}</option>`).join('')}
+                    </select>`;
 
                 return `
                     <tr class="${isNew}">
@@ -271,6 +274,18 @@
         }
 
         rosterBody.addEventListener('change', async (e) => {
+            const paySelect = e.target.closest('[data-pay-id]');
+            if (paySelect) {
+                const { error } = await sb
+                    .from('auditions')
+                    .update({ payment_status: paySelect.value })
+                    .eq('id', Number(paySelect.dataset.payId));
+                if (error) {
+                    alert('Could not update payment: ' + error.message);
+                    fetchAuditions();
+                }
+                return;
+            }
             const select = e.target.closest('[data-status-id]');
             if (!select) return;
             const id = Number(select.dataset.statusId);
@@ -383,10 +398,10 @@
         });
 
         document.getElementById('export-csv-btn').addEventListener('click', () => {
-            const headers = ['ID', 'Full Name', 'Email', 'Phone', 'City', 'Discipline', 'Experience', 'Reel URL', 'Music URL', 'Statement', 'Payment Method', 'GCash Ref', 'Status', 'Submitted At'];
+            const headers = ['ID', 'Full Name', 'Email', 'Phone', 'City', 'Discipline', 'Experience', 'Reel URL', 'Music URL', 'Statement', 'Payment Method', 'GCash Ref', 'Payment Status', 'Status', 'Submitted At'];
             const csv = [
                 headers.join(','),
-                ...allRows.map(r => [r.id, r.full_name, r.email, r.phone, r.city, r.discipline, r.experience, r.reel_url, r.music_url, r.statement, r.payment_method, r.gcash_ref, r.status, r.created_at]
+                ...allRows.map(r => [r.id, r.full_name, r.email, r.phone, r.city, r.discipline, r.experience, r.reel_url, r.music_url, r.statement, r.payment_method, r.gcash_ref, r.payment_status, r.status, r.created_at]
                     .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
             ].join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
