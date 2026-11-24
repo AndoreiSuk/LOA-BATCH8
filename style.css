@@ -1335,3 +1335,126 @@ body.admin-page {
   border-color: #b3402f;
   background: #fbf1ee;
 }
+
+/* Registration fee & payment */
+.fee-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: linear-gradient(160deg, #1a1913, #12120e);
+  border: 1px solid rgba(197, 160, 89, 0.5);
+}
+.fee-card .fee-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c5a059;
+}
+.fee-card strong {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 500;
+  color: #f1e3b8;
+}
+
+.pay-options {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pay-options legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.audition-form .pay-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f3efe7;
+  border: 1px solid #d8cfba;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pay-option input { accent-color: #a17c3e; margin-top: 4px; }
+.pay-option:has(input:checked) {
+  border-color: #c5a059;
+  background: #fbf6e8;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.12);
+}
+.audition-form .pay-option .pay-text { display: flex; flex-direction: column; gap: 4px; }
+.audition-form .pay-option .pay-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #1a1813;
+}
+.audition-form .pay-option .pay-sub {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #7a7366;
+}
+
+.gcash-panel {
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  gap: 22px;
+  padding: 20px;
+  background: #f3efe7;
+  border: 1px dashed #c5a059;
+}
+.gcash-panel.hidden { display: none; }
+.qr-box {
+  width: 168px;
+  height: 168px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px solid #d8cfba;
+}
+.qr-box img { width: 100%; height: 100%; object-fit: contain; }
+.qr-placeholder {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9a9285;
+  line-height: 1.6;
+}
+.gcash-details { display: grid; gap: 10px; align-content: start; }
+.gcash-details p {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #7a7366;
+}
+.gcash-details p strong { color: #1a1813; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .pay-options { grid-template-columns: 1fr; }
+  .gcash-panel { grid-template-columns: 1fr; justify-items: center; }
+  .gcash-details { width: 100%; }
+}
+
+.fee-card { margin-bottom: 20px; }
+.pay-options legend { margin-bottom: 12px; }
+.gcash-panel { margin-top: 4px; }
+
+.style-option.style-custom {
+  grid-column: 1 / -1;
+  background: #fbf6e8;
+  border-color: #c5a059;
+}
+.style-option.style-custom small { color: #a17c3e; font-weight: 600; }

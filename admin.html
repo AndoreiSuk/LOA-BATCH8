@@ -88,6 +88,7 @@
                         <th>Audition Music</th>
                         <th>Statement</th>
                         <th>Submitted</th>
+                        <th>Payment</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -223,7 +224,7 @@
             document.getElementById('stat-accepted').textContent = allRows.filter(r => r.status === 'Accepted').length;
 
             const filtered = allRows.filter(row => {
-                const matchesQuery = !q || [row.full_name, row.email, row.city, row.discipline].some(v => v?.toLowerCase().includes(q));
+                const matchesQuery = !q || [row.full_name, row.email, row.city, row.discipline, row.payment_method, row.gcash_ref].some(v => v?.toLowerCase().includes(q));
                 const matchesStatus = !st || row.status === st;
                 return matchesQuery && matchesStatus;
             });
@@ -236,6 +237,12 @@
                     : `<button type="button" class="btn-play-track" data-play-id="${row.id}">
                          <span>▶</span><span>Play Track</span>
                        </button>`;
+                const paymentCellHtml = !row.payment_method
+                    ? `<span style="color:#6e685f;">—</span>`
+                    : `<span class="pill-style">${escapeHtml(row.payment_method)}</span>${row.gcash_ref
+                        ? `<div class="applicant-sub">Ref ${escapeHtml(row.gcash_ref)}</div>`
+                        : ''
+                    }`;
 
                 return `
                     <tr class="${isNew}">
@@ -248,6 +255,7 @@
                         <td>${musicCellHtml}</td>
                         <td class="statement-cell" data-id="${row.id}" title="Click to read full statement">${escapeHtml(row.statement)}</td>
                         <td style="font-size:11px;color:#9c9588;white-space:nowrap;">${dateStr}</td>
+                        <td>${paymentCellHtml}</td>
                         <td>
                             <select class="status-select" data-status-id="${row.id}">
                                 ${['Pending', 'Accepted'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
@@ -375,10 +383,10 @@
         });
 
         document.getElementById('export-csv-btn').addEventListener('click', () => {
-            const headers = ['ID', 'Full Name', 'Email', 'Phone', 'City', 'Discipline', 'Experience', 'Reel URL', 'Music URL', 'Statement', 'Status', 'Submitted At'];
+            const headers = ['ID', 'Full Name', 'Email', 'Phone', 'City', 'Discipline', 'Experience', 'Reel URL', 'Music URL', 'Statement', 'Payment Method', 'GCash Ref', 'Status', 'Submitted At'];
             const csv = [
                 headers.join(','),
-                ...allRows.map(r => [r.id, r.full_name, r.email, r.phone, r.city, r.discipline, r.experience, r.reel_url, r.music_url, r.statement, r.status, r.created_at]
+                ...allRows.map(r => [r.id, r.full_name, r.email, r.phone, r.city, r.discipline, r.experience, r.reel_url, r.music_url, r.statement, r.payment_method, r.gcash_ref, r.status, r.created_at]
                     .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
             ].join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });

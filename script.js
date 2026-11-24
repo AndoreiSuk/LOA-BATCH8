@@ -109,20 +109,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const styleValue = document.getElementById('style-value');
   const styleDropdown = document.getElementById('style-dropdown');
 
+  // Typed styles are allowed: letters, numbers, spaces and . & ' / + - (2-40 chars)
+  const STYLE_PATTERN = /^[\p{L}\p{N} .&'’\/+-]{2,40}$/u;
+
+  function escapeAttr(str) {
+    return String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  }
+
+  // Tidy what was typed; reuse the official spelling if it matches a listed style
+  function normalizeStyle(raw) {
+    const typed = raw.replace(/\s+/g, ' ').trim();
+    const match = stylesList.find((s) => s.toLowerCase() === typed.toLowerCase());
+    return match || typed;
+  }
+
+  function syncStyleValue() {
+    const value = normalizeStyle(styleSearch.value);
+    styleValue.value = value;
+    styleSearch.setCustomValidity(
+      value && !STYLE_PATTERN.test(value)
+        ? 'Use letters, numbers, spaces or - only (2-40 characters)'
+        : ''
+    );
+  }
+
   function renderStyles(filter = '') {
     const query = filter.trim().toLowerCase();
     const matches = stylesList.filter((s) => s.toLowerCase().includes(query));
-    styleDropdown.innerHTML = matches.length
-      ? matches
-          .map((style) => {
-            const idx = String(stylesList.indexOf(style) + 1).padStart(2, '0');
-            const isSelected = styleValue.value === style ? 'active' : '';
-            return `<button type="button" class="style-option ${isSelected}" data-style="${style}">
-              <span>${style}</span><small>${idx}</small>
-            </button>`;
-          })
-          .join('')
-      : `<div style="padding:14px 16px;color:#888177;grid-column:1/-1;">No matching style found</div>`;
+    const typed = normalizeStyle(filter);
+    const hasExact = stylesList.some((s) => s.toLowerCase() === typed.toLowerCase());
+
+    const listHtml = matches
+      .map((style) => {
+        const idx = String(stylesList.indexOf(style) + 1).padStart(2, '0');
+        const isSelected = styleValue.value === style ? 'active' : '';
+        return `<button type="button" class="style-option ${isSelected}" data-style="${style}">
+          <span>${style}</span><small>${idx}</small>
+        </button>`;
+      })
+      .join('');
+
+    // Not on the list? Let them use their own style.
+    const customHtml = typed && !hasExact && STYLE_PATTERN.test(typed)
+      ? `<button type="button" class="style-option style-custom" data-style="${escapeAttr(typed)}">
+          <span>Use “${escapeAttr(typed)}” as my style</span>
+        </button>`
+      : '';
+
+    styleDropdown.innerHTML = listHtml + customHtml ||
+      `<div style="padding:14px 16px;color:#888177;grid-column:1/-1;">Use letters, numbers, or - only</div>`;
   }
 
   styleSearch.addEventListener('focus', () => {
@@ -131,16 +166,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   styleSearch.addEventListener('input', () => {
-    styleValue.value = '';
+    syncStyleValue();
     renderStyles(styleSearch.value);
     styleDropdown.classList.remove('hidden');
+  });
+
+  // Enter accepts what was typed instead of submitting the whole form
+  styleSearch.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      syncStyleValue();
+      styleSearch.value = styleValue.value;
+      styleDropdown.classList.add('hidden');
+    }
   });
 
   styleDropdown.addEventListener('click', (e) => {
     const btn = e.target.closest('.style-option');
     if (!btn) return;
-    styleValue.value = btn.dataset.style;
     styleSearch.value = btn.dataset.style;
+    syncStyleValue();
     styleDropdown.classList.add('hidden');
   });
 
@@ -212,7 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (!e.target.closest('#style-picker')) {
       styleDropdown.classList.add('hidden');
-      if (!styleValue.value) styleSearch.value = '';
+      syncStyleValue();
+      styleSearch.value = styleValue.value;
     }
     if (!e.target.closest('#experience-picker')) {
       closeExpMenu();
@@ -286,6 +332,82 @@ document.addEventListener('DOMContentLoaded', () => {
     if (phoneInput.value) showError(phoneInput, phoneError, checkPhone());
   });
 
+  // 7c. Registration Fee & Payment
+  // Fill these in when ready. Empty values show "TBA" / a QR placeholder.
+  const PAYMENT = {
+    fee: null,          // e.g. 350  ->  shows "₱350"
+    gcashName: '',      // e.g. 'Juan D.'
+    gcashNumber: '',    // e.g. '0917 123 4567'
+    gcashQr: ''         // e.g. './assets/gcash-qr.png'
+  };
+
+  const feeAmount = document.getElementById('fee-amount');
+  const gcashPanel = document.getElementById('gcash-panel');
+  const gcashQrImg = document.getElementById('gcash-qr');
+  const qrPlaceholder = document.getElementById('qr-placeholder');
+  const gcashNameEl = document.getElementById('gcash-name');
+  const gcashNumberEl = document.getElementById('gcash-number');
+  const gcashRef = document.getElementById('gcash-ref');
+  const gcashError = document.getElementById('gcash-error');
+
+  feeAmount.textContent = PAYMENT.fee ? `₱${Number(PAYMENT.fee).toLocaleString('en-PH')}` : '₱ TBA';
+  gcashNameEl.textContent = PAYMENT.gcashName || 'TBA';
+  gcashNumberEl.textContent = PAYMENT.gcashNumber || 'TBA';
+
+  function showQrPlaceholder() {
+    gcashQrImg.hidden = true;
+    qrPlaceholder.hidden = false;
+  }
+  if (PAYMENT.gcashQr) {
+    gcashQrImg.addEventListener('error', showQrPlaceholder);
+    gcashQrImg.src = PAYMENT.gcashQr;
+    gcashQrImg.hidden = false;
+    qrPlaceholder.hidden = true;
+  }
+
+  function checkGcashRef() {
+    if (gcashPanel.classList.contains('hidden')) {
+      gcashRef.setCustomValidity('');
+      return '';
+    }
+    const v = gcashRef.value;
+    const msg = /^\d{13}$/.test(v)
+      ? ''
+      : `GCash reference numbers have 13 digits (you typed ${v.length})`;
+    gcashRef.setCustomValidity(msg);
+    return msg;
+  }
+
+  function updatePayment() {
+    const method = form.querySelector('input[name="payment_method"]:checked')?.value;
+    const isGcash = method === 'GCash';
+    gcashPanel.classList.toggle('hidden', !isGcash);
+    gcashRef.required = isGcash;
+    if (!isGcash) {
+      gcashRef.value = '';
+      showError(gcashRef, gcashError, '');
+    }
+    checkGcashRef();
+  }
+
+  form.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+    radio.addEventListener('change', updatePayment);
+  });
+
+  gcashRef.addEventListener('input', () => {
+    gcashRef.value = gcashRef.value.replace(/\D/g, '').slice(0, 13);
+    const msg = checkGcashRef();
+    if (!gcashRef.value) showError(gcashRef, gcashError, '');
+    else if (gcashRef.classList.contains('has-error')) showError(gcashRef, gcashError, msg);
+  });
+  gcashRef.addEventListener('blur', () => {
+    if (gcashRef.value) showError(gcashRef, gcashError, checkGcashRef());
+  });
+  gcashRef.addEventListener('invalid', (e) => {
+    e.preventDefault();
+    showError(gcashRef, gcashError, checkGcashRef() || 'Enter your GCash reference number');
+  });
+
   // 8. Form Submission (Supabase Live Insert + Track Upload + Instant Broadcast)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -341,6 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
       reel_url: formData.get('reel'),
       music_url: finalMusicUrl,
       statement: formData.get('statement'),
+      payment_method: formData.get('payment_method'),
+      gcash_ref: formData.get('payment_method') === 'GCash' ? formData.get('gcash_ref') : null,
     };
 
     const { error } = await sb.from('auditions').insert([payload]);
@@ -369,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.reset();
     showError(emailInput, emailError, '');
     showError(phoneInput, phoneError, '');
+    updatePayment();
     styleValue.value = '';
     styleSearch.value = '';
     expValue.value = '';

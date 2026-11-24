@@ -100,7 +100,7 @@
 
             <div class="form-shell" id="apply">
                 <div class="form-header">
-                    <span>Batch 8</span>
+                    <span>BATCH 8</span>
                     <small>Estimated time · 6 minutes</small>
                 </div>
 
@@ -141,15 +141,15 @@
                     <div class="style-picker" id="style-picker">
                         <label for="style-search">Primary dance style <span>*</span></label>
                         <div class="style-input-wrap">
-                            <input type="text" id="style-search" placeholder="Select or type your style..."
-                                autocomplete="off" required />
+                            <input type="text" id="style-search" maxlength="40"
+                                placeholder="Select or type your style..." autocomplete="off" required />
                             <input type="hidden" name="discipline" id="style-value" required />
                             <span class="picker-chevron" aria-hidden="true">▾</span>
                         </div>
                         <div class="style-dropdown hidden" id="style-dropdown" role="listbox"></div>
                     </div>
                     <div class="custom-select-field full-field" id="experience-picker">
-                        <label id="experience-label">Years of formal or professional experience <span>*</span></label>
+                        <label id="experience-label">Years of experience <span>*</span></label>
                         <input type="hidden" name="experience" id="experience-value" required />
                         <button type="button" class="custom-select-trigger" id="experience-trigger"
                             aria-haspopup="listbox" aria-expanded="false"
@@ -205,6 +205,53 @@
                             placeholder="Tell us in a few considered lines..."></textarea>
                         <small>Maximum 600 characters</small>
                     </label>
+                    <div class="form-divider"></div>
+                    <div class="form-intro">
+                        <span class="form-number">04</span>
+                        <div>
+                            <p class="eyebrow">Registration fee</p>
+                            <h3>Secure your slot.</h3>
+                        </div>
+                    </div>
+
+                    <div class="fee-card full-field">
+                        <span class="fee-label">Registration fee</span>
+                        <strong id="fee-amount">₱ TBA</strong>
+                    </div>
+
+                    <fieldset class="pay-options full-field">
+                        <legend>Payment method <span>*</span></legend>
+                        <label class="pay-option">
+                            <input type="radio" name="payment_method" value="Cash (onsite)" required />
+                            <span class="pay-text">
+                                <span class="pay-title">Pay onsite</span>
+                                <span class="pay-sub">Cash on audition day</span>
+                            </span>
+                        </label>
+                        <label class="pay-option">
+                            <input type="radio" name="payment_method" value="GCash" required />
+                            <span class="pay-text">
+                                <span class="pay-title">GCash</span>
+                                <span class="pay-sub">Scan the QR, then enter your reference number</span>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <div class="gcash-panel full-field hidden" id="gcash-panel">
+                        <div class="qr-box">
+                            <img id="gcash-qr" alt="GCash QR code" hidden />
+                            <span class="qr-placeholder" id="qr-placeholder">QR code<br />unavailable</span>
+                        </div>
+                        <div class="gcash-details">
+                            <p>Account name <strong id="gcash-name">TBA</strong></p>
+                            <p>GCash number <strong id="gcash-number">TBA</strong></p>
+                            <label>GCash reference number <span>*</span>
+                                <input name="gcash_ref" id="gcash-ref" inputmode="numeric" maxlength="13"
+                                    placeholder="13-digit reference no." />
+                                <small class="field-error" id="gcash-error" aria-live="polite"></small>
+                            </label>
+                        </div>
+                    </div>
                     <label class="consent">
                         <input type="checkbox" name="consent" required />
                         <span>I confirm that the information and linked work submitted are my own.</span>
@@ -218,8 +265,8 @@
                     <span class="success-seal">VIII</span>
                     <p class="eyebrow">Application noted</p>
                     <h3>Your first move<br />is <em>complete.</em></h3>
-                    <p>Your details are saved on this device for this preview. League of Aces will share official Batch
-                        8 submission instructions separately.</p>
+                    <p>Thank you. Your audition has been received by League of Aces. Please keep an eye on your email
+                        and phone for the next steps, including the audition schedule and payment details.</p>
                     <button type="button" id="reset-form-btn" class="text-button">
                         Review another entry <span aria-hidden="true" class="arrow">→</span>
                     </button>
