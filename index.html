@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LOA | Batch 8 Auditions</title>
+    <meta name="description"
+        content="A private call for exceptional movement artists ready to earn their place among the Aces." />
+    <meta property="og:title" content="LOA | League of Aces — Batch 8 Auditions" />
+    <meta property="og:description" content="Movement begins with intention. Apply for Batch 8 auditions." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen" role="button" tabindex="0"
+        aria-label="Enter the League of Aces Batch 8 audition experience">
+        <div class="splash-glow"></div>
+        <div class="splash-mark" aria-hidden="true"><span>LOA</span></div>
+        <div class="splash-copy">
+            <p>League of Aces · Batch 8</p>
+            <h1>Movement begins<br />with <em>intention.</em></h1>
+        </div>
+        <div class="splash-enter">
+            <span class="splash-orbit"><i></i></span>
+            <strong>Touch to enter</strong>
+        </div>
+    </div>
+
+    <!-- Main Experience -->
+    <main id="main-experience" class="main-experience waiting">
+        <section class="hero compact-hero parallax-section" id="home" data-parallax>
+            <div class="hero-image" id="hero-image-container">
+                <img id="hero-dancer-img" src="./assets/audition-dancer.png"
+                    alt="Dancer in a champagne satin gown moving across a dark stage" />
+            </div>
+            <div class="hero-halo parallax-visual" aria-hidden="true"></div>
+            <div class="hero-shade"></div>
+
+            <header class="site-header">
+                <a class="monogram" href="#home" aria-label="League of Aces home">
+                    <span>LOA</span>
+                    <small>League of Aces</small>
+                </a>
+                <button id="menu-button" class="menu-button" aria-label="Toggle navigation" aria-expanded="false">
+                    <span></span><span></span>
+                </button>
+                <nav id="site-nav" aria-label="Main navigation">
+                    <a href="#brief">Audition brief</a>
+                    <button type="button" data-scroll-apply>
+                        Begin application
+                    </button>
+                </nav>
+            </header>
+
+            <div class="hero-copy">
+                <p class="eyebrow light">League of Aces presents · Batch 8 auditions</p>
+                <h1>Own the<br /><em>Eighth.</em></h1>
+                <p class="hero-intro">
+                    A private call for exceptional movement artists ready to earn their place among the Aces.
+                </p>
+                <button type="button" class="hero-cta" data-scroll-apply>
+                    <span>Begin your audition</span>
+                </button>
+            </div>
+
+            <div class="hero-footer">
+                <span>Applications close · TBA</span>
+                <a href="#brief">View the brief <span aria-hidden="true">↓</span></a>
+            </div>
+        </section>
+
+        <section class="application-section parallax-section" id="brief" data-parallax>
+            <div class="form-orbit parallax-visual" aria-hidden="true"><i></i></div>
+            <span class="form-ghost parallax-visual" aria-hidden="true">VIII</span>
+
+            <aside class="application-brief">
+                <div class="sticky-brief">
+                    <p class="eyebrow">Audition Form</p>
+                    <h2>One form.<br /><em>Your move.</em></h2>
+                    <p>
+                        We welcome established and emerging artists with a distinct point of view. Complete the
+                        application in one sitting and leave us with a clear sense of your practice.
+                    </p>
+                    <div class="brief-details">
+                        <div><span>Audition</span><strong>TBA</strong></div>
+                        <div><span>Location</span><strong>Anahaw Amphitheatre, Iligan City</strong></div>
+                        <div><span>Call time</span><strong>TBA</strong></div>
+                        <div><span>Eligibility</span><strong>Movement artists aged 10+</strong></div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="form-shell" id="apply">
+                <div class="form-header">
+                    <span>Batch 8</span>
+                    <small>Estimated time · 6 minutes</small>
+                </div>
+
+                <form id="audition-form" class="audition-form">
+                    <div class="form-intro">
+                        <span class="form-number">01</span>
+                        <div>
+                            <p class="eyebrow">Your identity</p>
+                            <h3>Tell us who is moving.</h3>
+                        </div>
+                    </div>
+                    <div class="field-grid">
+                        <label>Full name <span>*</span><input name="name" autocomplete="name" required
+                                placeholder="Your full name" /></label>
+                        <label>Email address <span>*</span><input type="email" name="email" autocomplete="email"
+                                required placeholder="you@example.com" /></label>
+                        <label>Phone number <span>*</span><input type="tel" name="phone" autocomplete="tel" required
+                                placeholder="+63 900 000 0000" /></label>
+                        <label>Current city <span>*</span><input name="city" autocomplete="address-level2" required
+                                placeholder="City, Barangay" /></label>
+                    </div>
+
+                    <div class="form-divider"></div>
+                    <div class="form-intro">
+                        <span class="form-number">02</span>
+                        <div>
+                            <p class="eyebrow">Your practice</p>
+                            <h3>Choose your primary path.</h3>
+                        </div>
+                    </div>
+                    <div class="style-picker" id="style-picker">
+                        <label for="style-search">Primary dance style <span>*</span></label>
+                        <div class="style-input-wrap">
+                            <input type="text" id="style-search"
+                                placeholder="Select or type your primary style (e.g., Hip-hop, Afro, Contemporary)..."
+                                autocomplete="off" required />
+                            <input type="hidden" name="discipline" id="style-value" required />
+                            <span class="picker-chevron" aria-hidden="true">▾</span>
+                        </div>
+                        <div class="style-dropdown hidden" id="style-dropdown" role="listbox"></div>
+                    </div>
+                    <div class="custom-select-field full-field" id="experience-picker">
+                        <label id="experience-label">Years of formal or professional experience <span>*</span></label>
+                        <input type="hidden" name="experience" id="experience-value" required />
+                        <button type="button" class="custom-select-trigger" id="experience-trigger"
+                            aria-haspopup="listbox" aria-expanded="false"
+                            aria-labelledby="experience-label experience-trigger">
+                            <span class="trigger-text is-placeholder" id="experience-text">Select a range</span>
+                            <span class="trigger-chevron" aria-hidden="true">▾</span>
+                        </button>
+                        <div class="custom-select-menu hidden" id="experience-menu" role="listbox">
+                            <button type="button" class="custom-select-option" role="option" data-value="Under 2 years">
+                                <span>Under 2 years</span><small>01</small>
+                            </button>
+                            <button type="button" class="custom-select-option" role="option" data-value="2–5 years">
+                                <span>2–5 years</span><small>02</small>
+                            </button>
+                            <button type="button" class="custom-select-option" role="option" data-value="6–10 years">
+                                <span>6–10 years</span><small>03</small>
+                            </button>
+                            <button type="button" class="custom-select-option" role="option" data-value="10+ years">
+                                <span>10+ years</span><small>04</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+                    <div class="form-intro">
+                        <span class="form-number">03</span>
+                        <div>
+                            <p class="eyebrow">Your submission</p>
+                            <h3>Leave us with a feeling.</h3>
+                        </div>
+                    </div>
+                    <label class="full-field">
+                        Performance reel or social media URL <span>*</span>
+                        <input type="url" name="reel" required placeholder="https://" />
+                    </label>
+                    <div class="music-field full-field">
+                        <label>Audition Music Track (Audio or MP4/MOV Cut) <span>*</span></label>
+                        <div class="music-input-group">
+                            <label class="music-upload-btn" for="music-file-input">
+                                <input type="file" id="music-file-input"
+                                    accept="audio/*,video/mp4,video/quicktime,.mp3,.wav,.m4a,.mp4,.mov"
+                                    class="sr-only" />
+                                <span id="music-file-label">Upload Track File (Max 35MB)</span>
+                                <small>MP3 / M4A / WAV / MP4</small>
+                            </label>
+                        </div>
+                        <small id="music-helper-note">Upload your cut track (audio or CapCut MP4/MOV export) for sound
+                            booth playback.</small>
+                    </div>
+                    <label class="full-field">
+                        What motivates you to join League of Aces? <span>*</span>
+                        <textarea name="statement" required maxlength="600"
+                            placeholder="Tell us in a few considered lines..."></textarea>
+                        <small>Maximum 600 characters</small>
+                    </label>
+                    <label class="consent">
+                        <input type="checkbox" name="consent" required />
+                        <span>I confirm that the information and linked work submitted are my own.</span>
+                    </label>
+                    <button class="gold-button submit-application" type="submit">
+                        Send my audition
+                    </button>
+                </form>
+
+                <div id="form-success" class="form-success hidden" role="status">
+                    <span class="success-seal">VIII</span>
+                    <p class="eyebrow">Application noted</p>
+                    <h3>Your first move<br />is <em>complete.</em></h3>
+                    <p>Your details are saved on this device for this preview. League of Aces will share official Batch
+                        8 submission instructions separately.</p>
+                    <button type="button" id="reset-form-btn" class="text-button">
+                        Review another entry <span aria-hidden="true" class="arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="minimal-footer">
+            <a class="monogram dark" href="#home"><span>LOA</span><small>League of Aces</small></a>
+            <p>Batch 8 auditions · 2027</p>
+            <div class="footer-links">
+                <div class="footer-socials" aria-label="Official social media">
+                    <a href="https://www.instagram.com/leagueofacesph/" target="_blank" rel="noopener noreferrer"
+                        aria-label="League of Aces PH on Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#satin-gold-grad)" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="satin-gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#e5cd94" />
+                                    <stop offset="50%" stop-color="#c5a059" />
+                                    <stop offset="100%" stop-color="#96702c" />
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                        <span>Instagram</span>
+                    </a>
+
+                    <a href="https://www.facebook.com/leagueofacesph" target="_blank" rel="noopener noreferrer"
+                        aria-label="League of Aces PH on Facebook">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="url(#satin-gold-grad)" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                        <span>Facebook</span>
+                    </a>
+                </div>
+                <span>© 2027 League of Aces PH</span>
+            </div>
+        </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./script.js"></script>
+</body>
+
+</html>

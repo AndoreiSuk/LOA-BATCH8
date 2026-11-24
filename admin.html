@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LOA | Batch 8 — Audition Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body class="admin-page">
+    <div class="admin-bg" aria-hidden="true">
+        <span class="orb orb-a"><i></i></span>
+        <span class="orb orb-b"></span>
+        <span class="orb orb-c"></span>
+        <span class="dot dot-a"></span>
+        <span class="dot dot-b"></span>
+        <span class="admin-ghost">VIII</span>
+    </div>
+    <header class="admin-header">
+        <a class="monogram" href="./index.html"><span>LOA</span><small>Batch 8 · Panel Roster</small></a>
+        <div class="header-actions hidden" id="admin-actions">
+            <button type="button" class="btn-outline" id="export-csv-btn">Export CSV</button>
+            <button type="button" class="btn-outline" id="logout-btn">Sign Out</button>
+        </div>
+    </header>
+
+    <!-- Login View -->
+    <section class="login-wrap" id="login-view">
+        <form class="login-card" id="login-form">
+            <p class="eyebrow">Restricted Access</p>
+            <h1>Panel Deliberation.</h1>
+            <p class="login-error hidden" id="login-error"></p>
+            <label>Admin Email<input type="email" id="admin-email" required placeholder="you@domain.com" /></label>
+            <label>Password<input type="password" id="admin-password" required placeholder="••••••••" /></label>
+            <button type="submit" class="btn-gold" style="width:100%;margin-top:8px;">Enter Roster →</button>
+        </form>
+    </section>
+
+    <!-- Dashboard View -->
+    <main class="dashboard hidden" id="dashboard-view">
+        <div class="stats-bar">
+            <div class="stat-card"><span>Total Auditionees</span><strong id="stat-total">0</strong></div>
+            <div class="stat-card"><span>Pending Review</span><strong id="stat-pending">0</strong></div>
+            <div class="stat-card"><span>Accepted</span><strong id="stat-accepted">0</strong></div>
+        </div>
+
+        <div class="toolbar">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <input type="search" id="search-input" placeholder="Search name, city, or email..." />
+                <div class="admin-dropdown" id="status-filter-picker">
+                    <input type="hidden" id="filter-status" value="" />
+                    <button type="button" class="admin-dropdown-trigger" id="status-filter-trigger"
+                        aria-haspopup="listbox" aria-expanded="false">
+                        <span id="status-filter-label">All Status</span>
+                        <span class="dropdown-chevron" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="admin-dropdown-menu hidden" id="status-filter-menu" role="listbox">
+                        <button type="button" class="admin-dropdown-option is-selected" role="option" data-value="">
+                            <span>All Status</span><small>ALL</small>
+                        </button>
+                        <button type="button" class="admin-dropdown-option" role="option" data-value="Pending">
+                            <span>Pending</span><small>01</small>
+                        </button>
+                        <button type="button" class="admin-dropdown-option" role="option" data-value="Accepted">
+                            <span>Accepted</span><small>02</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Applicant</th>
+                        <th>Contact & City</th>
+                        <th>Primary Style</th>
+                        <th>Experience</th>
+                        <th>Reel / SocMed</th>
+                        <th>Audition Music</th>
+                        <th>Statement</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="roster-body"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Statement Modal -->
+    <div class="modal-bg hidden" id="statement-modal">
+        <div class="modal-box">
+            <p class="eyebrow" id="modal-style"></p>
+            <h3 id="modal-name"></h3>
+            <p id="modal-text"></p>
+            <button type="button" class="btn-outline" id="close-modal-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- Music / Video Player Modal -->
+    <div class="modal-bg hidden" id="media-modal">
+        <div class="media-modal-box">
+            <p class="eyebrow" id="media-modal-style"></p>
+            <h3 id="media-modal-name"></h3>
+            <div class="media-player-stage" id="media-player-stage"></div>
+            <div style="display:flex;justify-content:flex-end;">
+                <button type="button" class="btn-outline" id="close-media-btn">Close Player</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hzurcojzczmiiaxoorob.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XKpbR-cQloSw353YfIdHcg__hxHsa3t';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const adminActions = document.getElementById('admin-actions');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const rosterBody = document.getElementById('roster-body');
+        const searchInput = document.getElementById('search-input');
+        const filterStatus = document.getElementById('filter-status');
+
+        let allRows = [];
+        let latestInsertedId = null;
+        let pollTimer = null;
+
+        async function checkSession() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) showDashboard();
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.classList.add('hidden');
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
+                return;
+            }
+            showDashboard();
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await sb.auth.signOut();
+            location.reload();
+        });
+
+        async function showDashboard() {
+            loginView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            adminActions.classList.remove('hidden');
+            await fetchAuditions();
+            subscribeRealtime();
+        }
+
+        async function fetchAuditions() {
+            const { data, error } = await sb
+                .from('auditions')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (!error && data) {
+                allRows = data;
+                renderTable();
+            }
+        }
+
+        function subscribeRealtime() {
+            sb.channel('auditions-live')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'auditions' }, (payload) => {
+                    if (payload.new && !allRows.some(r => r.id === payload.new.id)) {
+                        allRows.unshift(payload.new);
+                        latestInsertedId = payload.new.id;
+                        renderTable();
+                    }
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'auditions' }, (payload) => {
+                    if (payload.new) {
+                        const idx = allRows.findIndex(r => r.id === payload.new.id);
+                        if (idx !== -1) {
+                            allRows[idx] = payload.new;
+                            renderTable();
+                        }
+                    }
+                })
+                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'auditions' }, (payload) => {
+                    if (payload.old) {
+                        allRows = allRows.filter(r => r.id !== payload.old.id);
+                        renderTable();
+                    }
+                })
+                .on('broadcast', { event: 'new-submission' }, () => {
+                    fetchAuditions();
+                })
+                .subscribe();
+
+            if (!pollTimer) {
+                pollTimer = setInterval(fetchAuditions, 10000);
+            }
+        }
+
+        function renderTable() {
+            const q = searchInput.value.trim().toLowerCase();
+            const st = filterStatus.value;
+
+            document.getElementById('stat-total').textContent = allRows.length;
+            document.getElementById('stat-pending').textContent = allRows.filter(r => r.status === 'Pending').length;
+            document.getElementById('stat-accepted').textContent = allRows.filter(r => r.status === 'Accepted').length;
+
+            const filtered = allRows.filter(row => {
+                const matchesQuery = !q || [row.full_name, row.email, row.city, row.discipline].some(v => v?.toLowerCase().includes(q));
+                const matchesStatus = !st || row.status === st;
+                return matchesQuery && matchesStatus;
+            });
+
+            rosterBody.innerHTML = filtered.map(row => {
+                const dateStr = new Date(row.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const isNew = row.id === latestInsertedId ? 'row-flash' : '';
+                const musicCellHtml = !row.music_url
+                    ? `<span style="color:#6e685f;">—</span>`
+                    : `<button type="button" class="btn-play-track" data-play-id="${row.id}">
+                         <span>▶</span><span>Play Track</span>
+                       </button>`;
+
+                return `
+                    <tr class="${isNew}">
+                        <td style="color:#9c8a68;">#${String(row.id).padStart(3, '0')}</td>
+                        <td><span class="applicant-name">${escapeHtml(row.full_name)}</span></td>
+                        <td><div>${escapeHtml(row.phone)}</div><div class="applicant-sub">${escapeHtml(row.email)} · ${escapeHtml(row.city)}</div></td>
+                        <td><span class="pill-style">${escapeHtml(row.discipline)}</span></td>
+                        <td>${escapeHtml(row.experience)}</td>
+                        <td><a class="reel-link" href="${escapeHtml(row.reel_url)}" target="_blank" rel="noopener noreferrer">Open URL ↗</a></td>
+                        <td>${musicCellHtml}</td>
+                        <td class="statement-cell" data-id="${row.id}" title="Click to read full statement">${escapeHtml(row.statement)}</td>
+                        <td style="font-size:11px;color:#9c9588;white-space:nowrap;">${dateStr}</td>
+                        <td>
+                            <select class="status-select" data-status-id="${row.id}">
+                                ${['Pending', 'Accepted'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (latestInsertedId) {
+                setTimeout(() => { latestInsertedId = null; }, 2500);
+            }
+        }
+
+        rosterBody.addEventListener('change', async (e) => {
+            const select = e.target.closest('[data-status-id]');
+            if (!select) return;
+            const id = Number(select.dataset.statusId);
+            await sb.from('auditions').update({ status: select.value }).eq('id', id);
+        });
+
+        // Statement Modal & Pop-out Media Player Modal
+        const statementModal = document.getElementById('statement-modal');
+        const mediaModal = document.getElementById('media-modal');
+        const mediaStage = document.getElementById('media-player-stage');
+
+        function closeMediaModal() {
+            mediaStage.innerHTML = '';
+            mediaModal.classList.add('hidden');
+        }
+
+        rosterBody.addEventListener('click', (e) => {
+            const cell = e.target.closest('.statement-cell');
+            if (cell) {
+                const row = allRows.find(r => r.id === Number(cell.dataset.id));
+                if (!row) return;
+                document.getElementById('modal-style').textContent = `Statement`;
+                document.getElementById('modal-name').textContent = row.full_name;
+                document.getElementById('modal-text').textContent = row.statement;
+                statementModal.classList.remove('hidden');
+                return;
+            }
+
+            const playBtn = e.target.closest('[data-play-id]');
+            if (playBtn) {
+                const row = allRows.find(r => r.id === Number(playBtn.dataset.playId));
+                if (!row || !row.music_url) return;
+
+                document.getElementById('media-modal-style').textContent = `Audition Track`;
+                document.getElementById('media-modal-name').textContent = row.full_name;
+
+                const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(row.music_url);
+                mediaStage.innerHTML = isVideo
+                    ? `<video controls autoplay playsinline src="${escapeHtml(row.music_url)}"></video>`
+                    : `<audio controls autoplay src="${escapeHtml(row.music_url)}"></audio>`;
+
+                mediaModal.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            statementModal.classList.add('hidden');
+        });
+
+        statementModal.addEventListener('click', (e) => {
+            if (e.target === statementModal) statementModal.classList.add('hidden');
+        });
+
+        document.getElementById('close-media-btn').addEventListener('click', closeMediaModal);
+
+        mediaModal.addEventListener('click', (e) => {
+            if (e.target === mediaModal) closeMediaModal();
+        });
+
+        searchInput.addEventListener('input', renderTable);
+
+        // Custom Status Filter Dropdown Logic
+        const statusPicker = document.getElementById('status-filter-picker');
+        const statusTrigger = document.getElementById('status-filter-trigger');
+        const statusMenu = document.getElementById('status-filter-menu');
+        const statusLabel = document.getElementById('status-filter-label');
+
+        function closeStatusMenu() {
+            if (!statusPicker || !statusMenu || !statusTrigger) return;
+            statusPicker.classList.remove('is-open');
+            statusMenu.classList.add('hidden');
+            statusTrigger.setAttribute('aria-expanded', 'false');
+        }
+
+        if (statusTrigger && statusMenu) {
+            statusTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpening = statusMenu.classList.contains('hidden');
+                if (isOpening) {
+                    statusPicker.classList.add('is-open');
+                    statusMenu.classList.remove('hidden');
+                    statusTrigger.setAttribute('aria-expanded', 'true');
+                } else {
+                    closeStatusMenu();
+                }
+            });
+
+            statusMenu.querySelectorAll('.admin-dropdown-option').forEach((option) => {
+                option.addEventListener('click', () => {
+                    statusMenu.querySelectorAll('.admin-dropdown-option').forEach((o) => o.classList.remove('is-selected'));
+                    option.classList.add('is-selected');
+                    filterStatus.value = option.dataset.value;
+                    statusLabel.textContent = option.querySelector('span').textContent;
+                    closeStatusMenu();
+                    renderTable();
+                });
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#status-filter-picker')) closeStatusMenu();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeStatusMenu();
+                closeMediaModal();
+                statementModal.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            const headers = ['ID', 'Full Name', 'Email', 'Phone', 'City', 'Discipline', 'Experience', 'Reel URL', 'Music URL', 'Statement', 'Status', 'Submitted At'];
+            const csv = [
+                headers.join(','),
+                ...allRows.map(r => [r.id, r.full_name, r.email, r.phone, r.city, r.discipline, r.experience, r.reel_url, r.music_url, r.statement, r.status, r.created_at]
+                    .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'LOA-Batch8-Auditions.csv';
+            a.click();
+        });
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        checkSession();
+    </script>
+</body>
+
+</html>
