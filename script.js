@@ -257,13 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Phone: digits only, hard stop at 11 (also handles paste)
   phoneInput.addEventListener('input', () => {
     phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 11);
-    checkPhone();
-    if (phoneInput.classList.contains('has-error')) showError(phoneInput, phoneError, checkPhone());
+    const phoneMsg = checkPhone();
+    if (!phoneInput.value) showError(phoneInput, phoneError, '');
+    else if (phoneInput.classList.contains('has-error')) showError(phoneInput, phoneError, phoneMsg);
   });
 
   emailInput.addEventListener('input', () => {
-    checkEmail();
-    if (emailInput.classList.contains('has-error')) showError(emailInput, emailError, checkEmail());
+    const emailMsg = checkEmail();
+    if (!emailInput.value) showError(emailInput, emailError, '');
+    else if (emailInput.classList.contains('has-error')) showError(emailInput, emailError, emailMsg);
   });
 
   // Show our message instead of the browser's default bubble
